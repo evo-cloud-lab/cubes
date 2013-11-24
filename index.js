@@ -4,5 +4,6 @@ module.exports = {
     EntityEngineMongoDb: require('./lib/EntityEngineMongoDb'),
     BlobStore:   require('./lib/BlobStore'),
     BlobEngineFileSystem: require('./lib/BlobEngineFileSystem'),
-    Program:     require('./lib/Program')
+    Program:     require('./lib/Program'),
+    cli:         require('./cli')
 };
