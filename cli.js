@@ -33,10 +33,12 @@ function waitOp(neuron) {
     neuron
         .subscribe('op.progress', SERVICE, function (msg) {
             cli.logAction('Progress', null, msg.data.progress);
+            cli.logObject(msg);
         })
         .subscribe('op.complete', SERVICE, function (msg) {
-            cli.logAction('Complete', null, msg.success ? 'SUCCESS' : 'FAILURE', COMPLETE_STYLUS);
-            !msg.success && msg.error && cli.fatal(msg.error);
+            cli.logAction('Complete', null, msg.data.success ? 'SUCCESS' : 'FAILURE', COMPLETE_STYLUS);
+            cli.logObject(msg);
+            !msg.data.success && msg.data.error && cli.fatal(msg.data.error);
             cli.exit();
         });
 }

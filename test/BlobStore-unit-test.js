@@ -26,7 +26,7 @@ describe('BlobStore', function () {
         var store = new BlobStore({
             upload: function (localFile, callback) {
                 uploadArgs.push(localFile);
-                callback(null, engineOp);
+                callback(null, 'b1234', engineOp);
             }
         }, {});
         store.on('progress', function (opId, progress, clients) {
@@ -40,6 +40,7 @@ describe('BlobStore', function () {
             Try.final(function () {
                 assert.deepEqual(uploadArgs, ['localFile']);
                 assert.equal(err, null);
+                assert.equal(state.blobId, 'b1234');
                 assert.ok(state.opId);
                 engineOp.emit('progress', 10);
                 assert.deepEqual(events, [{ opId: state.opId, progress: 10, clients: ['client'] } ]);
