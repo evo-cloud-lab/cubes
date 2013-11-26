@@ -27,16 +27,16 @@ describe('EntityStore', function () {
     it('#update', function (done) {
         var args = [];
         var store = new EntityStore({
-            update: function (type, entity, callback) {
-                args.push({ type: type, entity: entity });
-                callback(null, 1234);
+            update: function (type, id, data, callback) {
+                args.push({ type: type, id: id, data: data });
+                callback(null, {});
             }
         });
 
         store.update('type', 'id', { key: 'value' }, function (err) {
             Try.final(function () {
                 assert.equal(err, null);
-                assert.deepEqual(args, [{ type: 'type', entity: { id: 'id', part: Partitioner.part('id'), data: { key: 'value' } } }]);
+                assert.deepEqual(args, [{ type: 'type', id: 'id', data: { key: 'value' } }]);
             }, done);
         });
     });
@@ -44,7 +44,7 @@ describe('EntityStore', function () {
     it('#select id', function (done) {
         var args = [];
         var store = new EntityStore({
-            fetch: function (type, ids, callback) {
+            fetch: function (type, ids, opts, callback) {
                 args.push({ type: type, ids: ids });
                 callback(null, ids.map(function (id) { return { id: id, part: 'part', data: 'test', key: 'value' }; }));
             }
@@ -62,7 +62,7 @@ describe('EntityStore', function () {
     it('#select part', function (done) {
         var args = [];
         var store = new EntityStore({
-            queryPartitions: function (type, part, count, callback) {
+            queryPartitions: function (type, part, count, opts, callback) {
                 args.push({ type: type, part: part, count: count });
                 results = [];
                 for (var i = 0; i < count; i ++) {
@@ -81,7 +81,7 @@ describe('EntityStore', function () {
             Try.final(function () {
                 assert.equal(err, null);
                 assert.deepEqual(args, [{ type: 'type', part: 100, count: 2 }]);
-                assert.deepEqual(entities, ['id0', 'id1']);
+                assert.deepEqual(entities, [{ id: 'id0', part: 100, data: 'test' }, { id: 'id1', part: 101, data: 'test' }]);
             }, done);
         });
     });

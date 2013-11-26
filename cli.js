@@ -88,11 +88,15 @@ function entityUpdate(opts) {
 }
 
 function entityGet(opts) {
-    execute('entity.select', { type: opts.TYPE, method: 'id', keys: opts.ID }, opts);
+    var options = {};
+    opts.attr && (options.attrs = opts.attr);
+    execute('entity.select', { type: opts.TYPE, method: 'id', keys: opts.ID, options: options }, opts);
 }
 
 function entityList(opts) {
-    execute('entity.select', { type: opts.TYPE, method: 'part', keys: [opts.PART, opts.COUNT] }, opts);
+    var options = {};
+    opts.attr && (options.attrs = opts.attr);
+    execute('entity.select', { type: opts.TYPE, method: 'part', keys: [opts.PART, opts.COUNT], options: options }, opts);
 }
 
 function entityRemove(opts) {
@@ -212,6 +216,12 @@ module.exports = function (theCli) {
                 type: 'string',
                 list: true,
                 help: 'Entity Ids'
+            })
+            .option('attr', {
+                required: false,
+                type: 'string',
+                list: true,
+                help: 'Return specified attributes only'
             });
     }, entityGet);
 
@@ -235,6 +245,12 @@ module.exports = function (theCli) {
                 default: 1,
                 type: 'integer',
                 help: 'Partitions count'
+            })
+            .option('attr', {
+                required: false,
+                type: 'string',
+                list: true,
+                help: 'Return specified attributes only'
             });
     }, entityList);
 
