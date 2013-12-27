@@ -1,9 +1,9 @@
 var Class  = require('js-class'),
     assert = require('assert'),
     Try    = require('evo-elements').Try,
+    Partitioner = require('evo-idioms').Partitioner,
 
-    EntityStore = require('../lib/EntityStore'),
-    Partitioner = require('../lib/Partitioner');
+    EntityStore = require('../lib/EntityStore');
 
 describe('EntityStore', function () {
     it('#create', function (done) {
