@@ -14,9 +14,9 @@
     "main": "./index.js",
     "bin": "./cubes.js",
     "dependencies": {
-        "evo-elements": "0.0.3",
-        "evo-neuron": "0.0.3",
-        "evo-idioms": "0.0.1",
+        "evo-elements": "https://github.com/evo-cloud/elements",
+        "evo-neuron": "https://github.com/evo-cloud/neuron",
+        "evo-idioms": "https://github.com/evo-cloud/idioms",
         "js-class": "0.0.2",
         "underscore": "1.5.1",
         "async": "0.2.9",
