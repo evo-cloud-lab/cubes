@@ -27,16 +27,16 @@ describe('EntityStore', function () {
     it('#update', function (done) {
         var args = [];
         var store = new EntityStore({
-            update: function (type, id, data, callback) {
-                args.push({ type: type, id: id, data: data });
+            update: function (type, id, rev, data, callback) {
+                args.push({ type: type, id: id, rev: rev, data: data });
                 callback(null, {});
             }
         });
 
-        store.update('type', 'id', { key: 'value' }, function (err) {
+        store.update('type', 'id', 'rev', { key: 'value' }, function (err) {
             Try.final(function () {
                 assert.equal(err, null);
-                assert.deepEqual(args, [{ type: 'type', id: 'id', data: { key: 'value' } }]);
+                assert.deepEqual(args, [{ type: 'type', id: 'id', rev: 'rev', data: { key: 'value' } }]);
             }, done);
         });
     });
