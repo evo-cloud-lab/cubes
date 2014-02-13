@@ -1,6 +1,7 @@
 var Class  = require('js-class'),
     assert = require('assert'),
     Try    = require('evo-elements').Try,
+    Errors = require('evo-elements').Errors,
     Partitioner = require('evo-idioms').Partitioner,
 
     EntityStore = require('../lib/EntityStore');
@@ -33,10 +34,92 @@ describe('EntityStore', function () {
             }
         });
 
-        store.update('type', 'id', 'rev', { key: 'value' }, function (err) {
+        store.update('type', 'id', 'rev', { key: 'value' }, {}, function (err) {
             Try.final(function () {
                 assert.equal(err, null);
                 assert.deepEqual(args, [{ type: 'type', id: 'id', rev: 'rev', data: { key: 'value' } }]);
+            }, done);
+        });
+    });
+
+    it('#update conflict', function (done) {
+        var store = new EntityStore({
+            update: function (type, id, rev, data, callback) {
+                callback(Errors.nonexist(id, { rev: rev }));
+            }
+        });
+
+        store.update('type', 'id', 'rev', { key: 'value' }, {}, function (err) {
+            Try.final(function () {
+                assert.ok(err);
+                assert.equal(err.code, 'NONEXIST');
+                assert.equal(err.id, 'id');
+                assert.equal(err.rev, 'rev');
+            }, done);
+        });
+    });
+
+    it('#update conflict refresh', function (done) {
+        var args = [];
+        var store = new EntityStore({
+            update: function (type, id, rev, data, callback) {
+                callback(Errors.nonexist(id, { rev: rev }));
+            },
+
+            fetch: function (type, ids, opts, callback) {
+                args.push({ type: type, ids: ids });
+                callback(null, ids.map(function (id) { return { id: id, part: 'part', data: 'test', rev: 'rev1' }; }));
+            }
+        });
+
+        store.update('type', 'id', 'rev', { key: 'value' }, { refresh: true }, function (err) {
+            Try.final(function () {
+                assert.deepEqual(args, [{ type: 'type', ids: ['id'] }]);
+                assert.ok(err);
+                assert.equal(err.code, 'CONFLICT');
+                assert.equal(err.id, 'id');
+                assert.equal(err.rev, 'rev');
+                assert.deepEqual(err.entity, { id: 'id', part: 'part', data: 'test', rev: 'rev1' });
+            }, done);
+        });
+    });
+
+    it('#update conflict refresh nonexists', function (done) {
+        var store = new EntityStore({
+            update: function (type, id, rev, data, callback) {
+                callback(Errors.nonexist(id, { rev: rev }));
+            },
+
+            fetch: function (type, ids, opts, callback) {
+                callback(null, []);
+            }
+        });
+
+        store.update('type', 'id', 'rev', { key: 'value' }, { refresh: true }, function (err) {
+            Try.final(function () {
+                assert.ok(err);
+                assert.equal(err.code, 'NONEXIST');
+                assert.equal(err.id, 'id');
+                assert.equal(err.rev, null);
+            }, done);
+        });
+    });
+
+    it('#update conflict refresh fail', function (done) {
+        var store = new EntityStore({
+            update: function (type, id, rev, data, callback) {
+                callback(Errors.nonexist(id, { rev: rev }));
+            },
+
+            fetch: function (type, ids, opts, callback) {
+                callback(Errors.make('TEST'));
+            }
+        });
+
+        store.update('type', 'id', 'rev', { key: 'value' }, { refresh: true }, function (err) {
+            Try.final(function () {
+                assert.ok(err);
+                assert.equal(err.code, 'TEST');
             }, done);
         });
     });

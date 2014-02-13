@@ -41,11 +41,11 @@
     ],
     "extensions": {
         "evo-cubes:engine.entity": {
-            "tingodb": "EntityEngineTingoDb",
-            "mongodb": "EntityEngineMongoDb"
+            "tingodb": "./lib/EntityEngineTingoDb",
+            "mongodb": "./lib/EntityEngineMongoDb"
         },
         "evo-cubes:engine.blob": {
-            "filesystem": "BlobEngineFilesystem"
+            "filesystem": "./lib/BlobEngineFilesystem"
         }
     }
 }
